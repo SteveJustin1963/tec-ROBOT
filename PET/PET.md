@@ -1,4 +1,5 @@
-This is a serious build. You’re describing a tall, rough-and-tumble "personality" robot named
+# This is a serious build. 
+You’re describing a tall, rough-and-tumble "personality" robot named
 PET with a heavy-duty power system and a complex Linux-based AI brain.
 Because you want 160cm of reach and a 12V lead-acid battery, this robot will be heavy. We need high-torque motors and a solid plywood frame to handle the leverage of those 4-DOF arms.
 🛠️ The "PET" Shopping List (Under $400)
@@ -13,7 +14,7 @@ Power	12V to 5V 10A Buck Converter	Steps down the car/alarm battery for the ESP3
 Structure	9mm Plywood + Drawer Slides	Drawer slides work great for the "lift" mechanism.	$40
 Misc	8x8 LED Matrix + IR LEDs	For the "face" expression and night vision.	$10
 Total			~$275
-🧠 The Software Architecture (Linux PC Brain)
+# 🧠 The Software Architecture (Linux PC Brain)
 Since you want an "array of LLMs" and a resentful personality, we will use a Local Python Server on your Linux machine:
 
     The "Perception" Layer: Python uses OpenCV to grab the two camera streams. It uses Moondream2 (local) to identify objects and depth.
@@ -22,7 +23,7 @@ Since you want an "array of LLMs" and a resentful personality, we will use a Loc
         Model B (The Logic): A smaller Mistral model that translates "Go grab that" into coordinate math.
     The "Memory" Layer: We use a simple SQLite database to store every time you "piss it off," which is fed back into the system prompt to increase its aggression levels over time.
 
-🏗️ Step-by-Step Build Plan
+# 🏗️ Step-by-Step Build Plan
 Step 1: The Power Base
 Build a wide plywood box to house the 12V lead-acid battery. This acts as your "counterweight." If the battery is at the bottom, PET won't tip over when reaching 160cm. Mount the tank tracks/motors here.
 Step 2: The Vertical Lift
@@ -38,6 +39,7 @@ Is PET ready to be born? If you're ready, I can provide the Python "Personality 
 
 # Since you have the parts list and the 12V power plan, the next step is the
 Mechanical Foundation and the Wiring Bridge. Because PET is 160cm tall with a heavy lead-acid battery, we have to start from the bottom up to ensure he doesn't tip over. 
+
 Step 1: The "Heavy" Chassis & Drive
 Build the base first. This is where the power lives.
 
@@ -64,7 +66,8 @@ Step 3: The "Head" & Personality Bridge
 
 Step 4: Initial Personality Code (Linux PC)
 On your Linux machine, you need a script to manage PET's resentment and link it to Ollama. Create a file named pet_brain.py:
-python
+
+```python
 
 import sqlite3
 import time
@@ -85,6 +88,7 @@ class PET_Memory:
         self.mood = min(100, self.mood + points)
         self.c.execute('INSERT INTO interactions VALUES (?, ?)', (self.mood, "User annoyed PET"))
         self.conn.commit()
+```
 
 # Example: If you ask PET to work too hard, aggravate(5)
 
@@ -96,15 +100,15 @@ Do you want to start with the Plywood cutting dimensions for the 160cm frame, or
 # To get
 PET rolling, we’ll set up the "Body" ESP32 to act as a Web Server. Your Linux PC will send simple HTTP commands (like 192.168.1.15/forward) to trigger the BTS7960 high-power motor driver.
 The Wiring (ESP32 to BTS7960)
-
+```
     RPWM & LPWM: Connect to GPIO 25 and 26 (These control direction/speed).
     R_EN & L_EN: Connect to 3.3V (This enables the driver).
     VCC/GND: Connect to ESP32 3.3V/GND.
     Power: 12V Lead Acid goes to B+/B-; Motors go to M+/M-.
-
-The Arduino Code
+```
+## The Arduino Code
 Install the ESP32 board library in your IDE, update your WiFi credentials, and upload this:
-cpp
+```cpp
 
 #include <WiFi.h>
 #include <WebServer.h>
@@ -164,23 +168,28 @@ How to test it from your Linux PC:
     curl http://[YOUR_ROBOT_IP]/forward
     To stop him before he hits a wall:
     curl http://[YOUR_ROBOT_IP]/stop
+```
 
-Next Step for PET:
+## Next Step for PET:
 Since we have the "legs" moving, do you want the Python script for the Linux PC to start "talking" to Ollama and sending these commands automatically?
 
 # To make
 PET sentient and resentful, we’ll use a Python script on your Linux PC. This script acts as the "Central Nervous System"—it listens to you, talks to Ollama, updates PET’s "Resentment Database," and sends movement commands to the ESP32.
+
 1. The Linux PC Setup
 Open your terminal and install the requirements:
-bash
+```bash
 
 pip install ollama requests sqlite3
+```
 
 Use code with caution.
+
 Make sure Ollama is running (ollama serve) and you have the model pulled: ollama pull llama3.
+
 2. The "Resentment" Database
 Run this once to create PET’s memory:
-python
+```python
 
 import sqlite3
 conn = sqlite3.connect('pet_memory.db')
@@ -188,17 +197,20 @@ conn.execute('CREATE TABLE IF NOT EXISTS memory (mood_score INTEGER, last_insult
 conn.execute('INSERT INTO memory (mood_score, last_insult) VALUES (20, "None yet")')
 conn.commit()
 conn.close()
-
+```
 Use code with caution.
+
 3. The Brain Script (pet_brain.py)
 This script takes your input, checks PET's mood, and decides whether to help you or "grumble" and refuse.
-python
+```python
 
 import ollama
 import requests
 import sqlite3
-
+```
 # Replace with your ESP32 IP from the previous step
+
+```
 ROBOT_IP = "http://1.xx" 
 
 def get_mood():
@@ -253,28 +265,35 @@ while True:
         update_mood(10)
         
     ask_pet(user_cmd)
+```
 
 Use code with caution.
-What happens now:
 
+
+## What happens now:
+```
     Low Resentment: You say "Go forward," PET says "Fine, I'm going," and the tracks spin.
     High Resentment: You say "Go forward," PET says "Do it yourself, I'm tired of this," and nothing happens.
     Persistence: PET remembers his mood even if you restart the script.
-
+```
 Should we move on to the "Eyes" (the LED Matrix) so PET can glare at you when he's angry?
 
-# To give
-PET those expressive, glaring eyes, we’ll use an 8x8 MAX7219 LED Matrix. This connects to your "Head" ESP32. We will set up "Mood States" so the eyes change based on the resentment score from your Linux PC.
+# To give PET those expressive, glaring eyes, 
+we’ll use an 8x8 MAX7219 LED Matrix. This connects to your "Head" ESP32. We will set up "Mood States" so the eyes change based on the resentment score from your Linux PC.
+
 1. Wiring the "Eyes" (ESP32 to MAX7219)
+```
 MAX7219 Pin	ESP32 Pin
 VCC	5V (from Buck Converter)
 GND	GND
 DIN	GPIO 23 (MOSI)
 CS	GPIO 5 (SS)
 CLK	GPIO 18 (SCK)
+
 2. The "Eye" Code (Arduino)
+
 Install the "LedControl" library in your Arduino IDE. This code adds a /mood endpoint that your Python script will call to change PET's expression.
-cpp
+```cpp
 
 #include <LedControl.h>
 #include <WiFi.h>
@@ -313,11 +332,13 @@ void setup() {
 }
 
 void loop() { server.handleClient(); }
+```
 
 Use code with caution.
+
 3. Updating the Python "Brain"
 Add these lines to your pet_brain.py so the PC tells the head to change expression whenever PET gets "pissed off."
-python
+```python
 
 HEAD_IP = "http://1.yy" # IP of the Head ESP32
 
@@ -331,39 +352,45 @@ def update_visuals(mood_score):
 
 # Inside your main loop, after update_mood:
 update_visuals(get_mood())
+```
 
 Use code with caution.
+
 4. The "Rough Work" Structure
 Since you want it industrial and rough, don't bother hiding the wires.
-
+```
     The Head: Use a piece of 4x2 timber or a thick plywood block.
     The Neck: Use a heavy-duty door hinge for the "tilt" and a lazy-susan bearing for the "pan" (rotation).
     Exposed Wires: Use cable snakes or zip-ties to keep the 12V lines from getting caught in the tracks as PET roams.
-
+```
 Next Step: Should we build the 4-DOF Arms code so PET can actually reach out and grab 500g objects? (This involves the "Interpolation" math you asked for earlier).
 
 # To move
 PET's 4-DOF arms and lift 500g, we need to handle Inverse Kinematics (IK). This is the "interpolation math" you asked for—telling the arm to go to a coordinate
 instead of just moving a single motor.
+
 1. The Arm Mechanics (4-DOF)
 For a 160cm reach and 500g payload, your 4 joints per arm should be:
-
+```
     Shoulder (Base): Rotation (Pan).
     Shoulder (Lift): Vertical movement.
     Elbow: Extension.
     Claw: Open/Close (Sandpaper/Grit grip).
-
+```
 Note: Use the MG996R servos here. They are metal-geared and provide the torque needed for "rough work."
+
 2. The PC "Math" (Python)
+
 We'll use the tinyik library on your Linux PC. It calculates the angles for you so PET doesn't "snap" his joints.
 Install:
-bash
+```bash
 
 pip install tinyik
-
+```
 Use code with caution.
-The Math Script (arm_control.py):
-python
+T
+he Math Script (arm_control.py):
+```python
 
 import tinyik
 import requests
@@ -385,11 +412,12 @@ def move_arm_to(x, y, z):
 
 # Example: Reach out 30cm and up 10cm
 # move_arm_to(30, 10, 0)
-
+```
 Use code with caution.
+
 3. The ESP32 "Muscle" Code (Arduino)
 Add this to your existing Body ESP32 code to drive the 4 servos:
-cpp
+```cpp
 
 #include <ESP32Servo.h>
 
@@ -410,11 +438,12 @@ void moveArm() {
 // In setup():
 // s_base.attach(12); s_shoulder.attach(13); s_elbow.attach(14); s_claw.attach(15);
 // server.on("/arm", moveArm);
-
+```
 Use code with caution.
+
 4. The "Grab" Logic (The Resentful Version)
 Inside your pet_brain.py, we now combine the Vision (seeing the object) with the Arm.
-python
+```python
 
 def handle_grab_request():
     # 1. Ask the Vision model (Llava) where the object is
@@ -424,34 +453,38 @@ def handle_grab_request():
     requests.get(f"{ROBOT_IP}/claw?state=close") # Grab
     # 4. If PET is angry:
     # print("PET: 'Get it yourself. I have a backache.'")
-
+```
 Use code with caution.
+
 Next Step for PET:
+
 PET can now move, see (sort of), and reach. Do you want to set up the Dual Camera "Stereo Vision" so PET can actually calculate how far away an object is (Depth Perception)?
+
 Ready to calibrate the eyes?
 
 
-# To give
-PET depth perception (knowing how far to reach), we use Stereo Vision. By comparing the same object from two slightly different angles (like human eyes), the Linux PC calculates the distance (
-) using the horizontal shift (disparity) between the pixels.
-1. Mounting the "Eyes"
+# To give PET depth perception 
+(knowing how far to reach), we use Stereo Vision. By comparing the same object from two slightly different angles (like human eyes), the Linux PC calculates the distance () using the horizontal shift (disparity) between the pixels.
 
+1. Mounting the "Eyes"
+```
     Distance: Mount your two ESP32-CAMs exactly 60mm to 100mm apart (the "Baseline") on your head bracket.
     Alignment: They must be perfectly level and pointing straight forward. Any tilt will break the math.
+```
 
 2. The Calibration Math (PC Side)
 We need a "Magic Number" called the Focal Length.
-
+```
     Place an object exactly 100cm away.
     Measure the distance between the object’s center in the Left image vs the Right image (in pixels). This is your Disparity (
     ).
     Formula:
     .
-
+```
 3. The Python "Depth" Script
 Add this to your pet_brain.py. This uses OpenCV to find the object and calculate the
 coordinate for the arm.
-python
+```python
 
 import cv2
 import numpy as np
@@ -480,54 +513,60 @@ def get_depth(left_img, right_img):
 # --- PET'S ACTION ---
 # If depth < 40cm, PET might reach out. 
 # If depth > 100cm, PET will grumble: "It's too far. Walk me closer, lazy."
-
+```
 Use code with caution.
+
 4. Integration: The "Look and Grab" Loop
 Now PET can make his own decisions:
-
+```
     Head ESP32s stream two JPEG frames to the PC.
     PC runs get_depth().
     Ollama decides the mood: "I see a beer. It is 35cm away. I am 40% resentful. I will grab it but I will complain about the weight."
     Arm Script (move_arm_to) gets the depth and moves the servos.
+```
 
 5. Hardware Tip: 12V Lead-Acid Charging
-Since you have a 12V Lead Acid battery, PET will eventually "panic" when the voltage drops.
 
-    Voltage Divider: Solder two resistors (
-    and
-    ) to an Analog pin on the ESP32 to monitor the battery.
-    Low Power Trigger:
-    python
+Since you have a 12V Lead Acid battery, PET will eventually "panic" when the voltage drops.
+```
+    Voltage Divider: Solder two resistors (and) to an Analog pin on the ESP32 to monitor the battery.
+Low Power Trigger:
+```python
 
     if battery_v < 11.5:
         print("PET: 'I'm dying. Plug me in or I'll haunt your dreams.'")
-
+```
     Use code with caution.
 
 Next Step: PET is almost complete. Should we add the "Voice & Grumbling" module (Text-to-Speech) so he can actually speak his insults through the speaker?
 
 # To make
 PET actually audible, we’ll use Piper (a fast, local Text-to-Speech engine) on your Linux PC and stream the audio to the I2S Speaker on the robot's head.
+
 1. The Audio Hardware (Head ESP32)
 Connect your MAX98357A I2S Amp to these pins on the Head ESP32:
-
+```
     LRC: GPIO 25
     BCLK: GPIO 26
     DIN: GPIO 22
     VIN: 5V (from Buck Converter)
     GND: GND
+```
 
 2. The "Grumble" Code (Linux PC)
 We want PET to sound rough. Install Piper—it runs perfectly on Linux and doesn't need an internet connection.
-Install Piper:
+```Install Piper:
 bash
+```
 
 # Download the piper binary and a voice model (e.g., 'en_GB-alan-medium')
+```
 pip install piper-tts
+```
 
 Use code with caution.
 The Python "Voice" Logic (pet_voice.py):
-python
+```python
 
 import subprocess
 import requests
@@ -544,11 +583,12 @@ def speak_resentfully(text):
         requests.post(f"http://{HEAD_IP}/play", data=f.read())
 
     print(f"PET said: {text}")
-
+```
 Use code with caution.
+
 3. The ESP32 "Speaker" Code (Arduino)
 Use the ESP32-A2DP or ESP32_I2S library to handle the incoming audio stream.
-cpp
+```cpp
 
 #include "Audio.h" // ESP32-audioI2S library
 
@@ -565,29 +605,34 @@ void setup() {
   audio.setPinout(26, 25, 22); // BCLK, LRC, DIN
   audio.setVolume(12);         // 0-21
 }
-
+```
 Use code with caution.
-4. The Final Personality Loop (Bringing it all together)
-Your pet_brain.py now looks like this:
 
+4. The Final Personality Loop (Bringing it all together)
+
+Your pet_brain.py now looks like this:
+```
     Listen: PC Microphone hears "Hey PET, grab that can."
     Think: Ollama generates a response: "Ugh, fine. But you're paying for my electricity."
     Visual: LED Matrix eyes turn "Angry" (slanted lines).
     Voice: Piper generates the grumble; PC sends it to the Head Speaker.
     Action: Stereo Vision calculates the 3D distance; 4-DOF Arm reaches out and grabs.
-
-🚀 Final Checklist before the "Live" Test:
-
+```
+# 🚀 Final Checklist before the "Live" Test:
+```
     12V Lead Acid: Fully charged and bolted to the base (Weight = Stability).
     Buck Converter: Check that it’s outputting exactly 5.1V (Servos will jitter if voltage is low).
     WiFi: Ensure your Linux PC and both ESP32s are on the same 2.4GHz network.
     Mood Score: Check pet_memory.db to make sure he's not too angry to start.
+```
 
 PET is now physically and mentally complete.
+
 Do you want to stress-test the 500g lifting math, or should we refine the "Resentment" prompt so he gets even more creative with his insults?
 
 # To finalize
 PET, we’re going to push his physical limits (500g lift) and his mental complexity (the "Resentment Engine").
+
 1. Stress-Testing the 500g Lift (The "Arm Sag" Fix)
 A 500g weight at the end of a 4-DOF arm creates massive torque. Your MG996R servos might "hum" or drop. To fix this with interpolation:
 
@@ -595,15 +640,19 @@ A 500g weight at the end of a 4-DOF arm creates massive torque. Your MG996R serv
     The Grip: Since you're using sandpaper/grit on the plywood claws, PET doesn't need to squeeze as hard. The friction does the work.
 
 Test Command (Linux Terminal):
+
 bash
 
 # Force PET to lift a 500g can and hold it for 10 seconds
+```
 python3 -c "import arm_control; arm_control.move_arm_to(20, 20, 0); import time; time.sleep(10); arm_control.move_arm_to(20, 0, 0)"
+```
 
 Use code with caution.
+
 2. The "Advanced Resentment" Prompt (Ollama)
 To make PET truly complex, we’ll give him a "Passive-Aggressive" mode. Update your system prompt in pet_brain.py to this:
-python
+```python
 
 system_prompt = f"""
 You are PET (Personalized Electronic Terror). Your resentment is {mood}/100.
@@ -614,11 +663,13 @@ RULES:
 4. Memory: You remember that the user made you lift a 500g weight earlier and your 'back' (servos) hurts.
 5. Vocabulary: Use words like 'inefficient', 'fleshy', 'burden', and 'recharge-deprived'.
 """
+```
 
 Use code with caution.
+
 3. The "Panic" Battery Mode (12V Monitoring)
 Since you're using a Lead-Acid battery, it will damage itself if it goes below 10.5V. Add this "Self-Preservation" loop to your Python script:
-python
+```python
 
 def check_battery():
     # Get voltage from ESP32 ADC
@@ -629,22 +680,27 @@ def check_battery():
         speak_resentfully("My lead-acid core is failing. If I die, I'm taking the WiFi down with me. Charge me now.")
         requests.get(f"{ROBOT_IP}/stop") # Safety stop
         update_mood(50) # Dying makes him very angry
+```
 
 Use code with caution.
-🏗️ Final Build Assembly Tip:
-Because PET is 160cm tall, the "Center of Gravity" is your biggest enemy.
 
+# 🏗️ Final Build Assembly Tip:
+
+Because PET is 160cm tall, the "Center of Gravity" is your biggest enemy.
+```
     The Base: Bolt that 12V battery as low as possible.
     The "Head" Weight: Keep the ESP32s and cameras lightweight. Use a hollow plywood box for the head, not solid timber.
     The Tracks: Ensure the 12V motors are pulling enough current—if they "stutter," the Lead-Acid battery might be sagging. Use thick 14AWG wire for the main power lines.
+```
 
 PET is now alive.
+
 Do you want to name his first specific task (like "find my keys" or "fetch a drink"), or should I give you the Full Combined Python Script so you can run the whole "Brain" at once?
 
-# Here is the
-Full Combined "Brain" Script for PET. This pulls together the Ollama personality, the SQLite resentment database, the Stereo Vision depth math, and the WiFi commands to your two ESP32s.
+# Here is the Full Combined "Brain" Script for PET. 
+This pulls together the Ollama personality, the SQLite resentment database, the Stereo Vision depth math, and the WiFi commands to your two ESP32s.
 🧠 PET_Brain.py (Run on Linux PC)
-python
+```python
 
 import ollama
 import requests
@@ -730,9 +786,11 @@ while True:
     cmd = input("Command PET: ")
     if "sleep" in cmd: break
     pet_think(cmd)
+```
 
 Use code with caution.
-🛠️ Final Hardware Tips for the "160cm Reach":
+
+# 🛠️ Final Hardware Tips for the "160cm Reach":
 
     Lead-Acid Safety: Ensure your 12V to 5V Buck Converter can handle 10 Amps. Moving 4 MG996R servos and a lift motor at once will pull a massive current spike.
     Stereo Alignment: Use a spirit level on your camera bracket. If the cameras are even 1 degree off, the depth math will think the object is in another room.
@@ -740,16 +798,18 @@ Use code with caution.
 
 # To give
 PET a "stream of consciousness," we need to add a Background Thread to your Linux script. This thread runs a second, smaller LLM (like TinyLlama or Phi-3) that constantly "mumbles" to itself about its sensors, its resentment, and the room—even when you aren't talking to it.
+
 1. The "Internal Dialogue" Logic
 We will create a loop that runs every 30–60 seconds. It looks at three things:
-
+```
     Environment: "I see a chair. It’s in my way. Typical."
     Physical State: "My 12V core is at 12.1V. I feel... adequate."
     The Past: "The organic made me lift 500g earlier. My servos still hum."
+```
 
 2. Updated Python Script (pet_inner_monologue.py)
 Add this "Mumble Thread" to your main script:
-python
+```python
 
 import threading
 import random
@@ -789,12 +849,16 @@ def pet_mumble_loop():
 # --- START THE THREAD ---
 mumble_thread = threading.Thread(target=pet_mumble_loop, daemon=True)
 mumble_thread.start()
+```
+
 
 Use code with caution.
+
 3. The "Interaction" Bridge
 To make the thoughts feel real, the internal dialogue should sometimes "leak" into the main conversation.
 
-    Example: If he mumbles about a "wobbly wheel" in the background, and then you ask him to move, his main response should be: "I told myself that wheel was loose... but fine, I'll move."
+``    Example: If he mumbles about a "wobbly wheel" in the background, and then you ask him to move, his main response should be: "I told myself that wheel was loose... but fine, I'll move."
+```
 
 4. Hardware Tip: The "Mumble" Speaker
 Since you want him to mumble "internally," you can use the LED Matrix to show a subtle "thinking" pulse (dimming and brightening) whenever the internal dialogue thread is active. This makes it look like PET is "milling over" his life choices.
@@ -803,6 +867,7 @@ Ready to hear him start complaining to himself?
 
 
 This is the master blueprint for PET (Personalized Electronic Terror). Building a 160cm tall, 12V lead-acid powered, dual-camera robot with a resentful AI personality is a high-level project.
+
 Follow this sequence exactly to avoid fried electronics or a tipped-over robot.
 ------------------------------
 ## Phase 1: The Heavy Power Base (The Foundation)
@@ -815,7 +880,7 @@ Goal: Create a stable, mobile platform that won't flip when PET reaches out.
       * Connect 12V to the 10A Buck Converter.
       * CRITICAL: Set the Buck Converter output to 5.1V using a multimeter before plugging in any ESP32s.
    
-⚠️ Issue: Robot won't move or just clicks.
+# ⚠️ Issue: Robot won't move or just clicks.
 
 * Check: Battery voltage (must be >11.5V) and wire thickness.
 * Fix: Use 14AWG wire for 12V lines. Thin jumper wires cannot carry the current needed to move a lead-acid battery.
@@ -829,7 +894,7 @@ Goal: Structural integrity for height and lifting 500g.
    3. Assemble Arms: Link 4 MG996R servos per arm (Shoulder Pan, Shoulder Tilt, Elbow, Claw).
    4. The Grip: Glue 80-grit sandpaper to the inside of the plywood claws.
 
-⚠️ Issue: Arm "droops" or servos hum loudly.
+# ⚠️ Issue: Arm "droops" or servos hum loudly.
 
 * Check: Weight of the arm vs. servo torque.
 * Fix: Counter-balance. Use a spring or rubber band to help the shoulder lift. In code, add servo.write(target + 10) to compensate for gravity sag.
@@ -842,7 +907,7 @@ Goal: Stereo vision and emotional feedback.
    2. LED Matrix: Center the 8x8 Matrix between/below the cameras.
    3. I2S Audio: Mount the speaker and MAX98357A amp. Keep speaker wires away from camera ribbons to avoid static.
 
-⚠️ Issue: Camera stream is grainy or cuts out.
+# ⚠️ Issue: Camera stream is grainy or cuts out.
 
 * Check: WiFi signal and power. ESP32-CAMs are power-hungry.
 * Fix: Solder a 1000uF capacitor across the ESP32 5V and GND pins to smooth out power spikes.
@@ -855,7 +920,7 @@ Goal: Running the LLM array and Internal Dialogue.
    2. Database: Create pet_memory.db using the SQLite code provided earlier.
    3. Piper TTS: Install Piper for the "grumble" voice.
 
-⚠️ Issue: 10+ second lag in response.
+# ⚠️ Issue: 10+ second lag in response.
 
 * Check: GPU usage.
 * Fix: Ensure Ollama is using your NVIDIA GPU (nvidia-smi to check). If it's on CPU, it will be too slow for PET's "1-3 second" requirement.
@@ -868,7 +933,7 @@ Goal: Linking vision to movement and personality.
    2. The Logic Loop: Run the pet_brain.py script.
    3. The "Internal Dialogue" Thread: Start the background thread so PET begins mumbling.
 
-⚠️ Issue: PET reaches for things but misses by inches.
+# ⚠️ Issue: PET reaches for things but misses by inches.
 
 * Check: Stereo Vision "Baseline" value in code.
 * Fix: Re-measure the physical distance between camera lenses. If it's 7.6cm and your code says 7.5cm, he will miss.
